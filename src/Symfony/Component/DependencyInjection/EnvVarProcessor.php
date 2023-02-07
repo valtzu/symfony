@@ -56,6 +56,7 @@ class EnvVarProcessor implements EnvVarProcessorInterface
             'require' => 'bool|int|float|string|array',
             'enum' => \BackedEnum::class,
             'shuffle' => 'array',
+            'static' => 'string',
         ];
     }
 
@@ -141,6 +142,14 @@ class EnvVarProcessor implements EnvVarProcessorInterface
             } else {
                 return require $file;
             }
+        }
+
+        if ('static' === $prefix) {
+            if (!$this->container->hasParameter("env($name)")) {
+                throw new RuntimeException(sprintf('Missing build-time env var "static:%s".', $name));
+            }
+
+            return $this->container->getParameter("env($name)");
         }
 
         if (false !== $i || 'string' !== $prefix) {

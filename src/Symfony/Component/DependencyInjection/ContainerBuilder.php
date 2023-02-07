@@ -757,6 +757,20 @@ class ContainerBuilder extends Container implements TaggedContainerInterface
         $this->extensionConfigs = [];
 
         if ($bag instanceof EnvPlaceholderParameterBag) {
+            if ($bag->getProvidedTypes()['static'] ?? false) {
+                foreach ($bag->getEnvPlaceholders() as $env => $prefix) {
+                    if (
+                        false === ($i = strrpos($env, ':'))
+                        || ':static:' !== substr(":$env", max(0, $i - 7), 8)
+                    ) {
+                        continue;
+                    }
+
+                    $envParam = substr($env, $i + 1);
+                    $bag->set("env($envParam)", $this->resolveEnvPlaceholders("%env($envParam)%", true));
+                }
+            }
+
             if ($resolveEnvPlaceholders) {
                 $this->parameterBag = new ParameterBag($this->resolveEnvPlaceholders($bag->all(), true));
             }
