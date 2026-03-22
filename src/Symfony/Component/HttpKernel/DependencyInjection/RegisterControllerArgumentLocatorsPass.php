@@ -167,6 +167,7 @@ class RegisterControllerArgumentLocatorsPass implements CompilerPassInterface
                     }
 
                     if ($autowireAttributes) {
+                        $invalidBehavior = ContainerInterface::EXCEPTION_ON_INVALID_REFERENCE;
                         $attribute = $autowireAttributes[0]->newInstance();
                         $value = $parameterBag->resolveValue($attribute->value);
 
@@ -214,6 +215,9 @@ class RegisterControllerArgumentLocatorsPass implements CompilerPassInterface
                 }
             }
         }
+
+//        dd($container->get((string)$controllers['App\Controller\TestController::index'])->getProvidedServices());
+//        dd($d = $container->getDefinition((string)$controllers['App\Controller\TestController::index']), $container->getDefinition($d->getFactory()[0]));
 
         $controllerLocatorRef = ServiceLocatorTagPass::register($container, $controllers);
 
